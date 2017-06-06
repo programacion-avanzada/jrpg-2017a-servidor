@@ -14,12 +14,10 @@
 
 ### Integrantes del equipo
 
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
+* Dimas Aguirre ([a-dimas](https://github.com/a-dimas))
+* Fabián Norberto Escobar ([FabianNorbertoEscobar](https://github.com/FabianNorbertoEscobar))
+* Maxi Perez Coto ([maxiperezc](https://github.com/maxiperezc))
+* Pablo Lopez ([pabloL0pez](https://github.com/pabloL0pez))
 
 ## Sobre la tecnología
 
