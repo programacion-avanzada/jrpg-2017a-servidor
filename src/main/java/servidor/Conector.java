@@ -298,7 +298,7 @@ public class Conector {
 
 			stMochila.setInt(21, personaje.getId());
 
-			for (int i = 1; i <= 20; i++) {
+			for (int i = 1; i <= 12; i++) {
 				stMochila.setInt(i, -1);
 			}
 			
@@ -318,7 +318,7 @@ public class Conector {
 			stMochila.setInt(1, personaje.getId());
 			ResultSet rsMochila = stMochila.executeQuery();
 
-			for(int i = 1; i <= 4; i++ ) {
+			for(int i = 1; i <= 12; i++ ) {
 				int tieneItem = rsMochila.getInt("item" + i);
 
 				PreparedStatement stItem = connect.prepareStatement("SELECT * FROM item WHERE idItem = ?");
