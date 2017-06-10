@@ -248,7 +248,7 @@ public class Conector {
 			personaje.setExperiencia(result.getInt("experiencia"));
 			personaje.setNivel(result.getInt("nivel"));
 
-			cargarItems(idPersonaje, personaje);
+			cargarItems(personaje);
 
 			// Devuelvo el paquete personaje con sus datos
 			return personaje;
@@ -317,24 +317,22 @@ public class Conector {
 			PreparedStatement stMochila = connect.prepareStatement("SELECT * FROM mochila WHERE idMochila = ?");
 			stMochila.setInt(1, personaje.getId());
 			ResultSet rsMochila = stMochila.executeQuery();
-			
-			int itemId;
-			ResultSet rsItem;
-			PreparedStatement stItem = connect.prepareStatement("SELECT * FROM item WHERE idItem = ?");
 
-			for(int i = 1; i <= 20; i++ ) {
-				 itemId = rsMochila.getInt("item" + i);
-				 
-				 stItem.setInt(1, itemId);
-				 rsItem = stItem.executeQuery();
+			for(int i = 1; i <= 4; i++ ) {
+				int tieneItem = rsMochila.getInt("item" + i);
+
+				PreparedStatement stItem = connect.prepareStatement("SELECT * FROM item WHERE idItem = ?");
+				stItem.setInt(1, i);
+				ResultSet rsItem = stItem.executeQuery();
 				
-				 Item item = new Item(itemId, rsItem.getString("nombre"), rsItem.getInt("bonoAtaque"), rsItem.getInt("bonoDefensa"), rsItem.getInt("bonoMagia"), rsItem.getInt("bonoSalud"), rsItem.getInt("bonoEnergia"));
+				String nombre = rsItem.getString("nombre");
+				Item item = new Item(i, nombre, rsItem.getInt("bonoAtaque"), rsItem.getInt("bonoDefensa"), rsItem.getInt("bonoMagia"), rsItem.getInt("bonoSalud"), rsItem.getInt("bonoEnergia"));
  
-				 personaje.agregarATodos(item);
-
-				 if (itemId > 0) {
-					 personaje.agregarItem(item);
-				 }
+				personaje.agregarATodos(item);
+                
+                if (tieneItem == 1) {
+                	personaje.agregarItem(item);
+                }
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
