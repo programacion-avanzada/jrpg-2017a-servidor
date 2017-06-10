@@ -205,6 +205,8 @@ public class Conector {
 			stActualizarPersonaje.setInt(8, paquetePersonaje.getId());
 
 			stActualizarPersonaje.executeUpdate();
+			
+			actualizarItems(paquetePersonaje);
 
 			Servidor.log.append("El personaje " + paquetePersonaje.getNombre() + " se ha actualizado con éxito."  + System.lineSeparator());;
 		} catch (SQLException e) {
@@ -246,7 +248,7 @@ public class Conector {
 			personaje.setExperiencia(result.getInt("experiencia"));
 			personaje.setNivel(result.getInt("nivel"));
 
-			cargarItems(result.getInt("idMochila"), personaje);
+			cargarItems(idPersonaje, personaje);
 
 			// Devuelvo el paquete personaje con sus datos
 			return personaje;
@@ -287,30 +289,33 @@ public class Conector {
 		return new PaqueteUsuario();
 	}
 
-	/*public void actualizarItem(final int itemId, final PaquetePersonaje personaje) {
-		PreparedStatement dbItem = connect.prepareStatement("SELECT * FROM item WHERE idItem = ?");
-		obtenerDatosItem.setInt(1, itemId);
+	private void actualizarItems(PaquetePersonaje personaje) {
+		try {
+			PreparedStatement stMochila = connect.prepareStatement("UPDATE mochila SET "
+					+ "(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, "
+					+ "item11, item12, item13, item14, item15, item16, item 17, item18, item19, item20) "
+					+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) where idMochila = ?");
 
-		ResultSet datosItem = obtenerDatosItem.executeQuery();
+			stMochila.setInt(21, personaje.getId());
 
-		PreparedStatement stActualizarMochila = connect.prepareStatement(
-				"UPDATE mochila SET item1=? ,item2=? ,item3=? ,item4=? ,item5=? ,item6=? ,item7=? ,item8=? ,item9=? "
-						+ ",item10=? ,item11=? ,item12=? ,item13=? ,item14=? ,item15=? ,item16=? ,item17=? ,item18=? ,item19=? ,item20=? WHERE idMochila=?");
-		while (i < paquetePersonaje.getCantItems()) {
-			stActualizarMochila.setInt(i + 1, paquetePersonaje.getItemID(i));
-			i++;
+			for (int i = 1; i <= 20; i++) {
+				stMochila.setInt(i, -1);
+			}
+			
+			for (Item item : personaje.getInventario()) {
+				stMochila.setInt(item.getId(), 1);
+			}
+
+		} catch (SQLException e) {
+			Servidor.log.append("Fallo la cosa");
+			e.printStackTrace();
 		}
-		for (int j = paquetePersonaje.getCantItems(); j < 20; j++) {
-			stActualizarMochila.setInt(j + 1, -1);
-		}
-		stActualizarMochila.setInt(21, paquetePersonaje.getId());
-		stActualizarMochila.executeUpdate();
-	}*/
+	}
 
-	public void cargarItems(final int idMochila, final PaquetePersonaje personaje) {
+	public void cargarItems(final PaquetePersonaje personaje) {
 		try {
 			PreparedStatement stMochila = connect.prepareStatement("SELECT * FROM mochila WHERE idMochila = ?");
-			stMochila.setInt(1, idMochila);
+			stMochila.setInt(1, personaje.getId());
 			ResultSet rsMochila = stMochila.executeQuery();
 			
 			int itemId;
@@ -319,38 +324,21 @@ public class Conector {
 
 			for(int i = 1; i <= 20; i++ ) {
 				 itemId = rsMochila.getInt("item" + i);
+				 
+				 stItem.setInt(1, itemId);
+				 rsItem = stItem.executeQuery();
+				
+				 Item item = new Item(itemId, rsItem.getString("nombre"), rsItem.getInt("bonoAtaque"), rsItem.getInt("bonoDefensa"), rsItem.getInt("bonoMagia"), rsItem.getInt("bonoSalud"), rsItem.getInt("bonoEnergia"));
+ 
+				 personaje.agregarATodos(item);
+
 				 if (itemId > 0) {
-					 stItem.setInt(1, itemId);
-					 rsItem = stItem.executeQuery();
-					 
-					 personaje.agregarItem(
-							 itemId,
-							 rsItem.getString("nombre"),
-							 rsItem.getString("icono"),
-							 rsItem.getInt("bonoAtaque"),
-							 rsItem.getInt("bonoDefensa"),
-							 rsItem.getInt("bonoMagia"),
-							 rsItem.getInt("bonoSalud"),
-							 rsItem.getInt("bonoEnergia")
-					);
+					 personaje.agregarItem(item);
 				 }
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
-		//for()
-
-		/*personaje.addItem(
-			resultadoDatoItem.getInt("idItem"),
-			resultadoDatoItem.getString("nombre"),
-			resultadoDatoItem.getInt("icono"),
-			resultadoDatoItem.getInt("bonusAtaque"),
-			resultadoDatoItem.getInt("bonusDefensa"),
-			resultadoDatoItem.getInt("bonusMagia"),
-			resultadoDatoItem.getInt("bonusSalud"),
-			resultadoDatoItem.getString("bonusEnergia")
-		);*/
 	}
 
 }
