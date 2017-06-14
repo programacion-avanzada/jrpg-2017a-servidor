@@ -5,8 +5,6 @@ import java.net.Socket;
 
 import com.google.gson.Gson;
 
-import cliente.*;
-import dominio.*;
 import estados.Estado;
 import mensajeria.Comando;
 import mensajeria.Paquete;
