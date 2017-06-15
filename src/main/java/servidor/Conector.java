@@ -1,5 +1,6 @@
 package servidor;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -136,7 +137,9 @@ public class Conector {
 
 			// Preparo la consulta para el registro la mochila en la base de
 			// datos
-			PreparedStatement stRegistrarMochila = connect.prepareStatement("INSERT INTO mochila(idMochila,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13,item14,item15,item16,item17,item18,item19,item20) VALUES(?,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1)");
+			PreparedStatement stRegistrarMochila = connect.prepareStatement(
+					"INSERT INTO mochila(idMochila,item1,item2,item3,item4,item5,item6,item7,item8,item9,item10,item11,item12,item13,item14,item15,item16,item17,item18,item19,item20) "
+					+ "VALUES(?,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1)");
 			stRegistrarMochila.setInt(1, idInventarioMochila);
 
 			// Registro inventario y mochila
@@ -291,23 +294,29 @@ public class Conector {
 
 	private void actualizarItems(PaquetePersonaje personaje) {
 		try {
-			PreparedStatement stMochila = connect.prepareStatement("UPDATE mochila SET "
-					+ "(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, "
-					+ "item11, item12, item13, item14, item15, item16, item 17, item18, item19, item20) "
-					+ "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) where idMochila = ?");
+			
+			String updateMochila = "UPDATE mochila SET "
+					+ "item1 = ?, item2 = ?, item3 = ?, item4 = ?, item5 = ?, item6 = ?, item7 = ?, item8 = ?, item9 = ?, item10 = ?, "
+					+ "item11 = ?, item12 = ?, item13 = ?, item14 = ?, item15 = ?, item16 = ?, item17 = ?, item18 = ?, item19 = ?, item20 = ? "
+					+ "where idMochila = ?";
+			PreparedStatement stMochila = connect.prepareStatement(updateMochila);
 
 			stMochila.setInt(21, personaje.getId());
 
-			for (int i = 1; i <= 12; i++) {
-				stMochila.setInt(i, -1);
-			}
+//			for (int i = 1; i <= 20; i++) {
+//				stMochila.setInt(i, -1);
+//			}
 			
-			for (Item item : personaje.getInventario()) {
+			ArrayList<Item> Inventario = personaje.getInventario();
+			for (Item item : Inventario) {
 				stMochila.setInt(item.getId(), 1);
 			}
+			
+			Servidor.log.append("personaje " + personaje.getNombre() + " mochila actualizada: " + stMochila.executeUpdate() + System.lineSeparator());
 
 		} catch (SQLException e) {
-			Servidor.log.append("Fallo la cosa");
+			Servidor.log.append("Error actualizando mochila");
+			System.err.println("Error actualizando mochila che");
 			e.printStackTrace();
 		}
 	}
