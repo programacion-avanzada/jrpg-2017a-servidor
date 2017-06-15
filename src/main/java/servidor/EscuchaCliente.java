@@ -51,6 +51,16 @@ public class EscuchaCliente extends Thread {
 			PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 
 			String cadenaLeida = (String) entrada.readObject();
+			/*
+			 * Mejorar la selección y despacho de mensajes
+
+El método run de la clase servidor.EscuchaCliente, del proyecto Servidor, tiene una gran estructura switch/case. 
+Debemos eliminarla, utilizando polimorfismo de mensajería.
+Una vez hecho esto, es trivial remover el switch/case del método run de la clase cliente.Cliente. Háganlo también. 
+En ese mismo proyecto, encontrará más switch/case en cliente.EscuchaMensajes. También deseamos reemplazar esa estructura.
+
+Por lo tanto, se desean eliminar todos los switch/case que están relacionados con el polimorfismo de mensajería.
+			 */
 		
 			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)){
 								
