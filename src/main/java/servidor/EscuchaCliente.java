@@ -24,22 +24,22 @@ import mensajeria.PaqueteUsuario;
 public class EscuchaCliente extends Thread {
 
 	protected final Socket socket;
-	private final ObjectInputStream entrada;
+	protected final ObjectInputStream entrada;
 	protected final ObjectOutputStream salida;
-	private int idPersonaje;
+	protected int idPersonaje;
 	protected final Gson gson = new Gson();
 	
 	protected PaquetePersonaje paquetePersonaje;
-	private PaqueteMovimiento paqueteMovimiento;
-	private PaqueteBatalla paqueteBatalla;
-	private PaqueteAtacar paqueteAtacar;
+	protected PaqueteMovimiento paqueteMovimiento;
+	protected PaqueteBatalla paqueteBatalla;
+	protected PaqueteAtacar paqueteAtacar;
 	protected PaqueteFinalizarBatalla paqueteFinalizarBatalla;
 	
 	private PaqueteDeMovimientos paqueteDeMovimiento;
 	private PaqueteDePersonajes paqueteDePersonajes;
 	protected String cadenaLeida;
 	
-	Paquete paquete;
+	protected Paquete paquete;
 	protected Paquete paqueteSv = new Paquete(null, 0);
 	protected PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	
@@ -76,7 +76,7 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 				Method metodo = objeto.getClass().getMethod("ejecutar", null);
 				metodo.invoke(objeto, null);
 				
-				
+				/*
 				switch (paquete.getComando()) {
 				
 				case Comando.REGISTRO:
@@ -251,6 +251,7 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 				default:
 					break;
 				}
+				*/
 				
 				cadenaLeida = (String) entrada.readObject();
 			}
