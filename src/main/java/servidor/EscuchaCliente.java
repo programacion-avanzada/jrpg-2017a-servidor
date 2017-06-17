@@ -1,6 +1,8 @@
 package servidor;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Socket;
 
 import com.google.gson.Gson;
@@ -21,21 +23,26 @@ import mensajeria.PaqueteUsuario;
 
 public class EscuchaCliente extends Thread {
 
-	private final Socket socket;
+	protected final Socket socket;
 	private final ObjectInputStream entrada;
-	private final ObjectOutputStream salida;
+	protected final ObjectOutputStream salida;
 	private int idPersonaje;
-	private final Gson gson = new Gson();
+	protected final Gson gson = new Gson();
 	
-	private PaquetePersonaje paquetePersonaje;
+	protected PaquetePersonaje paquetePersonaje;
 	private PaqueteMovimiento paqueteMovimiento;
 	private PaqueteBatalla paqueteBatalla;
 	private PaqueteAtacar paqueteAtacar;
-	private PaqueteFinalizarBatalla paqueteFinalizarBatalla;
+	protected PaqueteFinalizarBatalla paqueteFinalizarBatalla;
 	
 	private PaqueteDeMovimientos paqueteDeMovimiento;
 	private PaqueteDePersonajes paqueteDePersonajes;
-
+	protected String cadenaLeida;
+	
+	Paquete paquete;
+	protected Paquete paqueteSv = new Paquete(null, 0);
+	protected PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
+	
 	public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
 		this.socket = socket;
 		this.entrada = entrada;
@@ -46,11 +53,10 @@ public class EscuchaCliente extends Thread {
 	public void run() {
 		try {
 
-			Paquete paquete;
-			Paquete paqueteSv = new Paquete(null, 0);
-			PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
+			paqueteSv = new Paquete(null, 0);
+			paqueteUsuario = new PaqueteUsuario();
 
-			String cadenaLeida = (String) entrada.readObject();
+			cadenaLeida = (String) entrada.readObject();
 			/*
 			 * Mejorar la selección y despacho de mensajes
 
@@ -63,7 +69,14 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 			 */
 		
 			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)){
-								
+						
+				String comando = "Paquete" + Comando.getNombre(paquete.getComando());
+				
+				Object objeto = Class.forName(comando).cast(this);
+				Method metodo = objeto.getClass().getMethod("ejecutar", null);
+				metodo.invoke(objeto, null);
+				
+				
 				switch (paquete.getComando()) {
 				
 				case Comando.REGISTRO:
@@ -260,6 +273,21 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 
 		} catch (IOException | ClassNotFoundException e) {
 			Servidor.log.append("Error de conexion: " + e.getMessage() + System.lineSeparator());
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}
