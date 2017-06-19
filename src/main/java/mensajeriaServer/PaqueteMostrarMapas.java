@@ -14,6 +14,10 @@ public class PaqueteMostrarMapas extends EscuchaCliente implements Paquete {
 		super(ip, socket, entrada, salida);
 		// TODO Auto-generated constructor stub
 	}
+	
+	public PaqueteMostrarMapas(){
+		super(null,null,null,null);
+	}
 
 	@Override
 	public void ejecutar() {

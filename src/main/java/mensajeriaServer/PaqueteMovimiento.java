@@ -17,7 +17,7 @@ public class PaqueteMovimiento extends EscuchaCliente implements Paquete {
 
 	@Override
 	public void ejecutar() {
-		paqueteMovimiento = (PaqueteMovimiento) (gson.fromJson((String) cadenaLeida, PaqueteMovimiento.class));
+		paqueteMovimiento = (mensajeria.PaqueteMovimiento) (gson.fromJson((String) cadenaLeida, mensajeria.PaqueteMovimiento.class));
 		
 		Servidor.getUbicacionPersonajes().get(paqueteMovimiento.getIdPersonaje()).setPosX(paqueteMovimiento.getPosX());
 		Servidor.getUbicacionPersonajes().get(paqueteMovimiento.getIdPersonaje()).setPosY(paqueteMovimiento.getPosY());

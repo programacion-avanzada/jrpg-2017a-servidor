@@ -7,9 +7,6 @@ import java.net.Socket;
 
 import com.google.gson.Gson;
 
-import cliente.*;
-import dominio.*;
-import estados.Estado;
 import mensajeria.Comando;
 import mensajeria.Paquete;
 import mensajeria.PaqueteAtacar;
@@ -72,9 +69,31 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 						
 				String comando = "Paquete" + Comando.getNombre(paquete.getComando());
 				
-				Object objeto = Class.forName(comando).cast(this);
-				Method metodo = objeto.getClass().getMethod("ejecutar", null);
-				metodo.invoke(objeto, null);
+				System.out.println("clase de paquete: " + Paquete.class.getName());
+				
+				
+				//Object objeto = null;
+				Class castearAca = Class.forName("servidor."+comando);
+				System.out.println("clase a castear: " + castearAca.getName());
+				try {
+					Object nuevo = castearAca.newInstance();
+					System.out.println("clase de nuevo: " + nuevo.getClass());
+				} catch (InstantiationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				Paquete paqVacio = new Paquete();
+				PaqueteMostrarMapas casteado = (PaqueteMostrarMapas) castearAca.cast(paqVacio);
+				
+				Class casteada = casteado.getClass();
+				System.out.println("clase del casteado: " + casteada.getName());
+				
+				//paquete = castearAca.cast(paquete);
+				Class.forName("servidor."+comando).cast(paquete);
+				//Object objeto = Class.forName("servidor."+comando).cast(this);
+				Method metodo = paquete.getClass().getMethod("ejecutar", null);
+				metodo.invoke(paquete, null);
 				
 				/*
 				switch (paquete.getComando()) {
