@@ -15,8 +15,8 @@ public class PaqueteMostrarMapas extends EscuchaCliente implements Paquete {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public PaqueteMostrarMapas(){
-		super(null,null,null,null);
+	public PaqueteMostrarMapas(){		
+		super("127.0.0.1",null,null,null);
 	}
 
 	@Override
@@ -24,7 +24,6 @@ public class PaqueteMostrarMapas extends EscuchaCliente implements Paquete {
 		// Indico en el log que el usuario se conecto a ese mapa
 		paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
 		Servidor.log.append(socket.getInetAddress().getHostAddress() + " ha elegido el mapa " + paquetePersonaje.getMapa() + System.lineSeparator());
-		System.out.println("funca guacho! ");
 	}
 
 }

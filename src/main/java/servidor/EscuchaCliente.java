@@ -45,6 +45,7 @@ public class EscuchaCliente extends Thread {
 		this.entrada = entrada;
 		this.salida = salida;
 		paquetePersonaje = new PaquetePersonaje();
+		System.out.println("escuchaCliente creado");
 	}
 
 	public void run() {
@@ -73,7 +74,7 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 				
 				
 				//Object objeto = null;
-				Class castearAca = Class.forName("servidor."+comando);
+				Class<?> castearAca = Class.forName("servidor."+comando);
 				System.out.println("clase a castear: " + castearAca.getName());
 				try {
 					Object nuevo = castearAca.newInstance();
