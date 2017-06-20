@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.net.Socket;
 
 import com.google.gson.Gson;
+import com.sun.org.apache.bcel.internal.generic.GOTO;
 
 import mensajeria.Comando;
 import mensajeria.Paquete;
@@ -66,18 +67,18 @@ En ese mismo proyecto, encontrará más switch/case en cliente.EscuchaMensajes. 
 Por lo tanto, se desean eliminar todos los switch/case que están relacionados con el polimorfismo de mensajería.
 			 */
 		
-			while (!((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() == Comando.DESCONECTAR)){
-						
-				String comando = "Paquete" + Comando.getNombre(paquete.getComando());
+			while ((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() != Comando.DESCONECTAR){
+				System.out.println("Paquete: " + paquete);
+				String nombrePaquete = "Paquete" + Comando.getNombre(paquete.getComando());
 				
-				System.out.println("clase de paquete: " + Paquete.class.getName());
-				
-				
-				//Object objeto = null;
-				Class<?> castearAca = Class.forName("servidor."+comando);
+				Class<?> castearAca = Class.forName("mensajeria."+nombrePaquete);
 				System.out.println("clase a castear: " + castearAca.getName());
 				try {
 					Object nuevo = castearAca.newInstance();
+					Method meth = nuevo.getClass().getMethod("ejecutar", castearAca.getClasses());
+					System.out.println("meth: " + meth.getName());
+					Object[] res = (Object[]) meth.invoke(nuevo, null);
+					System.out.println(res.getClass());
 					System.out.println("clase de nuevo: " + nuevo.getClass());
 				} catch (InstantiationException e) {
 					// TODO Auto-generated catch block
@@ -91,14 +92,21 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 				System.out.println("clase del casteado: " + casteada.getName());
 				
 				//paquete = castearAca.cast(paquete);
-				Class.forName("servidor."+comando).cast(paquete);
+				Class.forName("servidor."+nombrePaquete).cast(paquete);
 				//Object objeto = Class.forName("servidor."+comando).cast(this);
 				Method metodo = paquete.getClass().getMethod("ejecutar", null);
 				metodo.invoke(paquete, null);
 				
 				/*
 				switch (paquete.getComando()) {
-				
+
+				case Comando.MOSTRARMAPAS:
+					
+					// Indico en el log que el usuario se conecto a ese mapa
+					paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
+					Servidor.log.append(socket.getInetAddress().getHostAddress() + " ha elegido el mapa " + paquetePersonaje.getMapa() + System.lineSeparator());
+					break;
+									
 				case Comando.REGISTRO:
 					
 					// Paquete que le voy a enviar al usuario
@@ -195,12 +203,6 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 					
 					break;
 
-				case Comando.MOSTRARMAPAS:
-					
-					// Indico en el log que el usuario se conecto a ese mapa
-					paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
-					Servidor.log.append(socket.getInetAddress().getHostAddress() + " ha elegido el mapa " + paquetePersonaje.getMapa() + System.lineSeparator());
-					break;
 					
 				case Comando.BATALLA:
 					
