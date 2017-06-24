@@ -8,19 +8,19 @@ import java.net.Socket;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteSalir extends EscuchaCliente implements Paquete{
+public class PaqueteSalir extends mensajeriaServer.Paquete{
 
-	public PaqueteSalir(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
+	public PaqueteSalir(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
-	public String ejecutar() {
+	public void ejecutar() {
 		// Cierro todo
 		try {
-			entrada.close();
-			salida.close();
-			socket.close();
+			escuchador.entrada.close();
+			escuchador.salida.close();
+			escuchador.socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -30,8 +30,7 @@ public class PaqueteSalir extends EscuchaCliente implements Paquete{
 		Servidor.getClientesConectados().remove(this);
 		
 		// Indico que se desconecto
-		Servidor.log.append(paquete.getIp() + " se ha desconectado." + System.lineSeparator());
-		return null;
+		Servidor.log.append(escuchador.paquete.getIp() + " se ha desconectado." + System.lineSeparator());
 	}
 
 }

@@ -8,27 +8,24 @@ import java.net.Socket;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteMovimiento extends EscuchaCliente implements Paquete {
+public class PaqueteMovimiento extends mensajeriaServer.Paquete{
 
-	public PaqueteMovimiento(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
-		// TODO Auto-generated constructor stub
+	public PaqueteMovimiento(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
-	public String ejecutar() {
-		paqueteMovimiento = (mensajeria.PaqueteMovimiento) (gson.fromJson((String) cadenaLeida, mensajeria.PaqueteMovimiento.class));
+	public void ejecutar() {
+		escuchador.paqueteMovimiento = (mensajeria.PaqueteMovimiento) (escuchador.gson.fromJson((String) escuchador.cadenaLeida, mensajeria.PaqueteMovimiento.class));
 		
-		Servidor.getUbicacionPersonajes().get(paqueteMovimiento.getIdPersonaje()).setPosX(paqueteMovimiento.getPosX());
-		Servidor.getUbicacionPersonajes().get(paqueteMovimiento.getIdPersonaje()).setPosY(paqueteMovimiento.getPosY());
-		Servidor.getUbicacionPersonajes().get(paqueteMovimiento.getIdPersonaje()).setDireccion(paqueteMovimiento.getDireccion());
-		Servidor.getUbicacionPersonajes().get(paqueteMovimiento.getIdPersonaje()).setFrame(paqueteMovimiento.getFrame());
+		Servidor.getUbicacionPersonajes().get(escuchador.paqueteMovimiento.getIdPersonaje()).setPosX(escuchador.paqueteMovimiento.getPosX());
+		Servidor.getUbicacionPersonajes().get(escuchador.paqueteMovimiento.getIdPersonaje()).setPosY(escuchador.paqueteMovimiento.getPosY());
+		Servidor.getUbicacionPersonajes().get(escuchador.paqueteMovimiento.getIdPersonaje()).setDireccion(escuchador.paqueteMovimiento.getDireccion());
+		Servidor.getUbicacionPersonajes().get(escuchador.paqueteMovimiento.getIdPersonaje()).setFrame(escuchador.paqueteMovimiento.getFrame());
 		
 		synchronized(Servidor.atencionMovimientos){
 			Servidor.atencionMovimientos.notify();
 		}
-		
-		return null;
 	}
 
 }

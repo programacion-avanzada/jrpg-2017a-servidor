@@ -8,26 +8,25 @@ import java.net.Socket;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteAtacar extends EscuchaCliente implements Paquete {
+public class PaqueteAtacar extends mensajeriaServer.Paquete{
 
-	public PaqueteAtacar(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
+	public PaqueteAtacar(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
-	public String ejecutar() {
-		paqueteAtacar = (mensajeria.PaqueteAtacar) gson.fromJson(cadenaLeida, mensajeria.PaqueteAtacar.class);
+	public void ejecutar() {
+		escuchador.paqueteAtacar = (mensajeria.PaqueteAtacar) escuchador.gson.fromJson(escuchador.cadenaLeida, mensajeria.PaqueteAtacar.class);
 		for(EscuchaCliente conectado : Servidor.getClientesConectados()) {
-			if(conectado.getIdPersonaje() == paqueteAtacar.getIdEnemigo()) {
+			if(conectado.getIdPersonaje() == escuchador.paqueteAtacar.getIdEnemigo()) {
 				try {
-					conectado.getSalida().writeObject(gson.toJson(paqueteAtacar));
+					conectado.getSalida().writeObject(escuchador.gson.toJson(escuchador.paqueteAtacar));
 				} catch (IOException e) {
 					Servidor.log.append("Error al atacar" + System.lineSeparator());
 					e.printStackTrace();
 				}
 			}
 		}
-		return null;
 	}
 
 }

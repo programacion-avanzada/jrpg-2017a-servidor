@@ -11,32 +11,30 @@ import mensajeria.PaqueteUsuario;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteRegistro extends EscuchaCliente implements mensajeriaServer.Paquete{
+public class PaqueteRegistro extends mensajeriaServer.Paquete{
 
-	public PaqueteRegistro(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
-		// TODO Auto-generated constructor stub
+	public PaqueteRegistro(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
-	public String ejecutar() {
+	public void ejecutar() {
 		// Paquete que le voy a enviar al usuario
-		paqueteSv.setComando(Comando.REGISTRO);		
-		paqueteUsuario = (PaqueteUsuario) (gson.fromJson(cadenaLeida, PaqueteUsuario.class)).clone();
+		escuchador.paqueteSv.setComando(Comando.REGISTRO);		
+		escuchador.paqueteUsuario = (PaqueteUsuario) (escuchador.gson.fromJson(escuchador.cadenaLeida, PaqueteUsuario.class)).clone();
 		try {
 			// Si el usuario se pudo registrar le envio un msj de exito
-			if (Servidor.getConector().registrarUsuario(paqueteUsuario)) {
-				paqueteSv.setMensaje(Paquete.msjExito);
-				salida.writeObject(gson.toJson(paqueteSv));
+			if (Servidor.getConector().registrarUsuario(escuchador.paqueteUsuario)) {
+				escuchador.paqueteSv.setMensaje(Paquete.msjExito);
+				escuchador.salida.writeObject(escuchador.gson.toJson(escuchador.paqueteSv));
 			// Si el usuario no se pudo registrar le envio un msj de fracaso
 			} else {
-				paqueteSv.setMensaje(Paquete.msjFracaso);
-				salida.writeObject(gson.toJson(paqueteSv));
+				escuchador.paqueteSv.setMensaje(Paquete.msjFracaso);
+				escuchador.salida.writeObject(escuchador.gson.toJson(escuchador.paqueteSv));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 
 }

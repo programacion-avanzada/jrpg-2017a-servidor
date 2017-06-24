@@ -9,22 +9,21 @@ import estados.Estado;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteFinalizarBatalla extends EscuchaCliente implements mensajeriaServer.Paquete{
+public class PaqueteFinalizarBatalla extends mensajeriaServer.Paquete{
 
-	public PaqueteFinalizarBatalla(String ip, Socket socket, ObjectInputStream entrada,
-			ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
+	public PaqueteFinalizarBatalla(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 	
-	public String ejecutar(){
+	public void ejecutar(){
 		
-		paqueteFinalizarBatalla = (mensajeria.PaqueteFinalizarBatalla) gson.fromJson(cadenaLeida, mensajeria.PaqueteFinalizarBatalla.class);
-		Servidor.getPersonajesConectados().get(paqueteFinalizarBatalla.getId()).setEstado(Estado.estadoJuego);
-		Servidor.getPersonajesConectados().get(paqueteFinalizarBatalla.getIdEnemigo()).setEstado(Estado.estadoJuego);
+		escuchador.paqueteFinalizarBatalla = (mensajeria.PaqueteFinalizarBatalla) escuchador.gson.fromJson(escuchador.cadenaLeida, mensajeria.PaqueteFinalizarBatalla.class);
+		Servidor.getPersonajesConectados().get(escuchador.paqueteFinalizarBatalla.getId()).setEstado(Estado.estadoJuego);
+		Servidor.getPersonajesConectados().get(escuchador.paqueteFinalizarBatalla.getIdEnemigo()).setEstado(Estado.estadoJuego);
 		for(EscuchaCliente conectado : Servidor.getClientesConectados()) {
-			if(conectado.getIdPersonaje() == paqueteFinalizarBatalla.getIdEnemigo()) {
+			if(conectado.getIdPersonaje() == escuchador.paqueteFinalizarBatalla.getIdEnemigo()) {
 				try {
-					conectado.getSalida().writeObject(gson.toJson(paqueteFinalizarBatalla));
+					conectado.getSalida().writeObject(escuchador.gson.toJson(escuchador.paqueteFinalizarBatalla));
 				} catch (IOException e) {
 					Servidor.log.append("Error al finalizar batalla" + System.lineSeparator());
 					e.printStackTrace();
@@ -35,8 +34,6 @@ public class PaqueteFinalizarBatalla extends EscuchaCliente implements mensajeri
 		synchronized(Servidor.atencionConexiones){
 			Servidor.atencionConexiones.notify();
 		}
-		
-		return null;
 	}
 
 

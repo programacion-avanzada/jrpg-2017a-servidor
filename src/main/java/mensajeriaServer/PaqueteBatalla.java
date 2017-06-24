@@ -9,37 +9,36 @@ import estados.Estado;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteBatalla extends EscuchaCliente implements Paquete {
+public class PaqueteBatalla extends mensajeriaServer.Paquete{
 
-	public PaqueteBatalla(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
-		// TODO Auto-generated constructor stub
+	public PaqueteBatalla(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
-	public String ejecutar() {
+	public void ejecutar() {
 		// Le reenvio al id del personaje batallado que quieren pelear
-		paqueteBatalla = (mensajeria.PaqueteBatalla) gson.fromJson(cadenaLeida, mensajeria.PaqueteBatalla.class);
-		Servidor.log.append(paqueteBatalla.getId() + " quiere batallar con " + paqueteBatalla.getIdEnemigo() + System.lineSeparator());
+		escuchador.paqueteBatalla = (mensajeria.PaqueteBatalla) escuchador.gson.fromJson(escuchador.cadenaLeida, mensajeria.PaqueteBatalla.class);
+		Servidor.log.append(escuchador.paqueteBatalla.getId() + " quiere batallar con " + escuchador.paqueteBatalla.getIdEnemigo() + System.lineSeparator());
 		
 		//seteo estado de batalla
-		Servidor.getPersonajesConectados().get(paqueteBatalla.getId()).setEstado(Estado.estadoBatalla);
-		Servidor.getPersonajesConectados().get(paqueteBatalla.getIdEnemigo()).setEstado(Estado.estadoBatalla);
-		paqueteBatalla.setMiTurno(true);
+		Servidor.getPersonajesConectados().get(escuchador.paqueteBatalla.getId()).setEstado(Estado.estadoBatalla);
+		Servidor.getPersonajesConectados().get(escuchador.paqueteBatalla.getIdEnemigo()).setEstado(Estado.estadoBatalla);
+		escuchador.paqueteBatalla.setMiTurno(true);
 		try {
-			salida.writeObject(gson.toJson(paqueteBatalla));
+			escuchador.salida.writeObject(escuchador.gson.toJson(escuchador.paqueteBatalla));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		for(EscuchaCliente conectado : Servidor.getClientesConectados()){
-			if(conectado.getIdPersonaje() == paqueteBatalla.getIdEnemigo()){
-				int aux = paqueteBatalla.getId();
-				paqueteBatalla.setId(paqueteBatalla.getIdEnemigo());
-				paqueteBatalla.setIdEnemigo(aux);
-				paqueteBatalla.setMiTurno(false);
+			if(conectado.getIdPersonaje() == escuchador.paqueteBatalla.getIdEnemigo()){
+				int aux = escuchador.paqueteBatalla.getId();
+				escuchador.paqueteBatalla.setId(escuchador.paqueteBatalla.getIdEnemigo());
+				escuchador.paqueteBatalla.setIdEnemigo(aux);
+				escuchador.paqueteBatalla.setMiTurno(false);
 				try {
-					conectado.getSalida().writeObject(gson.toJson(paqueteBatalla));
+					conectado.getSalida().writeObject(escuchador.gson.toJson(escuchador.paqueteBatalla));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -51,9 +50,6 @@ public class PaqueteBatalla extends EscuchaCliente implements Paquete {
 		synchronized(Servidor.atencionConexiones){
 			Servidor.atencionConexiones.notify();
 		}
-		
-		return null;
-		
 	}
 
 }

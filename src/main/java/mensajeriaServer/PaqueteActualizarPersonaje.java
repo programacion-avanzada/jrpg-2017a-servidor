@@ -9,30 +9,28 @@ import mensajeria.PaquetePersonaje;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteActualizarPersonaje extends EscuchaCliente implements Paquete {
+public class PaqueteActualizarPersonaje extends mensajeriaServer.Paquete {
 
-	public PaqueteActualizarPersonaje(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
-		// TODO Auto-generated constructor stub
+	public PaqueteActualizarPersonaje(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
-	public String ejecutar() {
-		paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
-		Servidor.getConector().actualizarPersonaje(paquetePersonaje);
+	public void ejecutar() {
+		escuchador.paquetePersonaje = (PaquetePersonaje) escuchador.gson.fromJson(escuchador.cadenaLeida, PaquetePersonaje.class);
+		Servidor.getConector().actualizarPersonaje(escuchador.paquetePersonaje);
 		
-		Servidor.getPersonajesConectados().remove(paquetePersonaje.getId());
-		Servidor.getPersonajesConectados().put(paquetePersonaje.getId(), paquetePersonaje);
+		Servidor.getPersonajesConectados().remove(escuchador.paquetePersonaje.getId());
+		Servidor.getPersonajesConectados().put(escuchador.paquetePersonaje.getId(), escuchador.paquetePersonaje);
 
 		for(EscuchaCliente conectado : Servidor.getClientesConectados()) {
 			try {
-				conectado.getSalida().writeObject(gson.toJson(paquetePersonaje));
+				conectado.getSalida().writeObject(escuchador.gson.toJson(escuchador.paquetePersonaje));
 			} catch (IOException e) {
 				Servidor.log.append("Error al actualizar personaje" + System.lineSeparator());
 				e.printStackTrace();
 			}
 		}
-		return null;
 	}
 
 }

@@ -9,30 +9,26 @@ import mensajeria.PaquetePersonaje;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteCreacionPJ extends EscuchaCliente implements Paquete {
+public class PaqueteCreacionPJ extends mensajeriaServer.Paquete{
 
-	public PaqueteCreacionPJ(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
+	public PaqueteCreacionPJ(EscuchaCliente escuchador) {
+		super(escuchador);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public String ejecutar() {
+	public void ejecutar() {
 		// Casteo el paquete personaje
-		paquetePersonaje = (PaquetePersonaje) (gson.fromJson(cadenaLeida, PaquetePersonaje.class));
+		escuchador.paquetePersonaje = (PaquetePersonaje) (escuchador.gson.fromJson(escuchador.cadenaLeida, PaquetePersonaje.class));
 		
 		// Guardo el personaje en ese usuario
-		Servidor.getConector().registrarPersonaje(paquetePersonaje, paqueteUsuario);
+		Servidor.getConector().registrarPersonaje(escuchador.paquetePersonaje, escuchador.paqueteUsuario);
 		
 		// Le envio el id del personaje
 		try {
-			salida.writeObject(gson.toJson(paquetePersonaje, paquetePersonaje.getClass()));
+			escuchador.salida.writeObject(escuchador.gson.toJson(escuchador.paquetePersonaje, escuchador.paquetePersonaje.getClass()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		return null;
-
 	}
-
 }
