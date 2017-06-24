@@ -1,7 +1,15 @@
 package mensajeriaServer;
 
-public interface Paquete {
+import servidor.EscuchaCliente;
+
+public abstract class Paquete {
+
+	protected EscuchaCliente escuchador;
 	
-	public void ejecutar();
+	public Paquete(EscuchaCliente escuchador) {
+		this.escuchador = escuchador;
+	}
+	
+	public abstract void ejecutar();
 }
 

@@ -11,48 +11,45 @@ import mensajeria.PaqueteUsuario;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteInicioSesion extends EscuchaCliente implements Paquete {
+public class PaqueteInicioSesion extends mensajeriaServer.Paquete {
 
-	public PaqueteInicioSesion(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
-		// TODO Auto-generated constructor stub
+	public PaqueteInicioSesion(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
 	public void ejecutar() {
 
-		paqueteSv.setComando(Comando.INICIOSESION);
+		escuchador.paqueteSv.setComando(Comando.INICIOSESION);
 		
 		// Recibo el paquete usuario
-		paqueteUsuario = (PaqueteUsuario) (gson.fromJson(cadenaLeida, PaqueteUsuario.class));
+		escuchador.paqueteUsuario = (PaqueteUsuario) (escuchador.gson.fromJson(escuchador.cadenaLeida, PaqueteUsuario.class));
 		
 		// Si se puede loguear el usuario le envio un mensaje de exito y el paquete personaje con los datos
-		if (Servidor.getConector().loguearUsuario(paqueteUsuario)) {
+		if (Servidor.getConector().loguearUsuario(escuchador.paqueteUsuario)) {
 			
-			paquetePersonaje = new PaquetePersonaje();
-			paquetePersonaje = Servidor.getConector().getPersonaje(paqueteUsuario);
-			paquetePersonaje.setComando(Comando.INICIOSESION);
+			escuchador.paquetePersonaje = new PaquetePersonaje();
+			escuchador.paquetePersonaje = Servidor.getConector().getPersonaje(escuchador.paqueteUsuario);
+			escuchador.paquetePersonaje.setComando(Comando.INICIOSESION);
 			//paquetePersonaje.setMensaje(Paquete.msjExito);
-			paquetePersonaje.setMensaje("1");
-			idPersonaje = paquetePersonaje.getId();
+			escuchador.paquetePersonaje.setMensaje("1");
+			escuchador.idPersonaje = escuchador.paquetePersonaje.getId();
 			
 			try {
-				salida.writeObject(gson.toJson(paquetePersonaje));
+				escuchador.salida.writeObject(escuchador.gson.toJson(escuchador.paquetePersonaje));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 		} else {
 			//paqueteSv.setMensaje(Paquete.msjFracaso);
-			paqueteSv.setMensaje("0");
+			escuchador.paqueteSv.setMensaje("0");
 			try {
-				salida.writeObject(gson.toJson(paqueteSv));
+				escuchador.salida.writeObject(escuchador.gson.toJson(escuchador.paqueteSv));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		
 	}
 
 }

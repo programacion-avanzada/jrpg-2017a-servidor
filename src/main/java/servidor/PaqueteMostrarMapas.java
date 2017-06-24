@@ -15,10 +15,11 @@ public class PaqueteMostrarMapas extends EscuchaCliente implements Paquete {
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		// Indico en el log que el usuario se conecto a ese mapa
 		paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
 		Servidor.log.append(socket.getInetAddress().getHostAddress() + " ha elegido el mapa " + paquetePersonaje.getMapa() + System.lineSeparator());
+		return paquetePersonaje.getMapa() + "";
 	}
 
 }

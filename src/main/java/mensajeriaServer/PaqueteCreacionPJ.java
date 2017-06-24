@@ -17,7 +17,7 @@ public class PaqueteCreacionPJ extends EscuchaCliente implements Paquete {
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		// Casteo el paquete personaje
 		paquetePersonaje = (PaquetePersonaje) (gson.fromJson(cadenaLeida, PaquetePersonaje.class));
 		
@@ -30,6 +30,8 @@ public class PaqueteCreacionPJ extends EscuchaCliente implements Paquete {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
 
 	}
 

@@ -15,7 +15,7 @@ public class PaqueteAtacar extends EscuchaCliente implements Paquete {
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		paqueteAtacar = (mensajeria.PaqueteAtacar) gson.fromJson(cadenaLeida, mensajeria.PaqueteAtacar.class);
 		for(EscuchaCliente conectado : Servidor.getClientesConectados()) {
 			if(conectado.getIdPersonaje() == paqueteAtacar.getIdEnemigo()) {
@@ -27,6 +27,7 @@ public class PaqueteAtacar extends EscuchaCliente implements Paquete {
 				}
 			}
 		}
+		return null;
 	}
 
 }

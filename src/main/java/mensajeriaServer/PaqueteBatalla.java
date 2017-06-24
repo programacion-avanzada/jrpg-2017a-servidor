@@ -17,7 +17,7 @@ public class PaqueteBatalla extends EscuchaCliente implements Paquete {
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		// Le reenvio al id del personaje batallado que quieren pelear
 		paqueteBatalla = (mensajeria.PaqueteBatalla) gson.fromJson(cadenaLeida, mensajeria.PaqueteBatalla.class);
 		Servidor.log.append(paqueteBatalla.getId() + " quiere batallar con " + paqueteBatalla.getIdEnemigo() + System.lineSeparator());
@@ -51,6 +51,8 @@ public class PaqueteBatalla extends EscuchaCliente implements Paquete {
 		synchronized(Servidor.atencionConexiones){
 			Servidor.atencionConexiones.notify();
 		}
+		
+		return null;
 		
 	}
 

@@ -19,7 +19,7 @@ public class PaqueteRegistro extends EscuchaCliente implements mensajeriaServer.
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		// Paquete que le voy a enviar al usuario
 		paqueteSv.setComando(Comando.REGISTRO);		
 		paqueteUsuario = (PaqueteUsuario) (gson.fromJson(cadenaLeida, PaqueteUsuario.class)).clone();
@@ -36,6 +36,7 @@ public class PaqueteRegistro extends EscuchaCliente implements mensajeriaServer.
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 }

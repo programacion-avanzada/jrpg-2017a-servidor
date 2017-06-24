@@ -1,45 +1,37 @@
 package servidor;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.bcel.internal.generic.GOTO;
 
-import mensajeria.Comando;
-import mensajeria.Paquete;
-import mensajeria.PaqueteAtacar;
-import mensajeria.PaqueteBatalla;
-import mensajeria.PaqueteDeMovimientos;
-import mensajeria.PaqueteDePersonajes;
-import mensajeria.PaqueteFinalizarBatalla;
-import mensajeria.PaqueteMovimiento;
-import mensajeria.PaquetePersonaje;
-import mensajeria.PaqueteUsuario;
+import estados.Estado;
+import mensajeria.*;
 
 public class EscuchaCliente extends Thread {
 
-	protected final Socket socket;
-	protected final ObjectInputStream entrada;
-	protected final ObjectOutputStream salida;
-	protected int idPersonaje;
-	protected final Gson gson = new Gson();
+	public final Socket socket;
+	public final ObjectInputStream entrada;
+	public final ObjectOutputStream salida;
+	public int idPersonaje;
+	public final Gson gson = new Gson();
 	
-	protected PaquetePersonaje paquetePersonaje;
-	protected PaqueteMovimiento paqueteMovimiento;
-	protected PaqueteBatalla paqueteBatalla;
-	protected PaqueteAtacar paqueteAtacar;
-	protected PaqueteFinalizarBatalla paqueteFinalizarBatalla;
+	public PaquetePersonaje paquetePersonaje;
+	public PaqueteMovimiento paqueteMovimiento;
+	public PaqueteBatalla paqueteBatalla;
+	public PaqueteAtacar paqueteAtacar;
+	public PaqueteFinalizarBatalla paqueteFinalizarBatalla;
 	
 	private PaqueteDeMovimientos paqueteDeMovimiento;
 	private PaqueteDePersonajes paqueteDePersonajes;
-	protected String cadenaLeida;
+	public String cadenaLeida;
 	
-	protected Paquete paquete;
-	protected Paquete paqueteSv = new Paquete(null, 0);
-	protected PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
+	public Paquete paquete;
+	public Paquete paqueteSv = new Paquete(null, 0);
+	public PaqueteUsuario paqueteUsuario = new PaqueteUsuario();
 	
 	public EscuchaCliente(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
 		this.socket = socket;
@@ -69,24 +61,39 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 		
 			while ((paquete = gson.fromJson(cadenaLeida, Paquete.class)).getComando() != Comando.DESCONECTAR){
 				System.out.println("Paquete: " + paquete);
-				String nombrePaquete = "Paquete" + Comando.getNombre(paquete.getComando());
 				
-				Class<?> castearAca = Class.forName("mensajeria."+nombrePaquete);
-				System.out.println("clase a castear: " + castearAca.getName());
-				try {
+				System.out.println("paquete getcomando: " + paquete.getComando());
+				if(paquete.getComando() == Comando.INICIOSESION){
+					String nombrePaquete = "mensajeriaServer.Paquete" + Comando.getNombre(paquete.getComando());
+					Class<?> clazz = Class.forName(nombrePaquete);
+					Constructor<?> ctor = clazz.getConstructor(this.getClass());
+					mensajeriaServer.Paquete pqte = (mensajeriaServer.Paquete) ctor.newInstance(new Object[] { this });
+					pqte.ejecutar();
+				}
+				
+				if(paquete.getComando() == Comando.MOSTRARMAPAS){
+					String nombrePaquete = "mensajeria.Paquete" + Comando.getNombre(paquete.getComando());
+					Class<?> clazz = Class.forName(nombrePaquete);
+					Constructor<?> ctor = clazz.getConstructor(this.getClass());
+					mensajeriaServer.Paquete pqte = (mensajeriaServer.Paquete) ctor.newInstance(new Object[] { this });
+					pqte.ejecutar();
+				}
+				
+				//System.out.println("clase a castear: " + castearAca.getName());
+				/*try {
+					//hago un nuevo objeto de la clase que obtuve arriba
 					Object nuevo = castearAca.newInstance();
 					Method meth = nuevo.getClass().getMethod("ejecutar", castearAca.getClasses());
 					System.out.println("meth: " + meth.getName());
-					Object[] res = (Object[]) meth.invoke(nuevo, null);
-					System.out.println(res.getClass());
-					System.out.println("clase de nuevo: " + nuevo.getClass());
+					//invoco el método ejecutar del nuevo objeto
+					//es decir PaqueteHacerCosa.ejecutar();
+					String res = (String) meth.invoke(nuevo, null);
 				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
 				Paquete paqVacio = new Paquete();
-				PaqueteMostrarMapas casteado = (PaqueteMostrarMapas) castearAca.cast(paqVacio);
+				mensajeria.PaqueteMostrarMapas casteado = (mensajeria.PaqueteMostrarMapas) castearAca.cast(paqVacio);
 				
 				Class casteada = casteado.getClass();
 				System.out.println("clase del casteado: " + casteada.getName());
@@ -96,16 +103,11 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 				//Object objeto = Class.forName("servidor."+comando).cast(this);
 				Method metodo = paquete.getClass().getMethod("ejecutar", null);
 				metodo.invoke(paquete, null);
+				*/
 				
-				/*
+				
+				
 				switch (paquete.getComando()) {
-
-				case Comando.MOSTRARMAPAS:
-					
-					// Indico en el log que el usuario se conecto a ese mapa
-					paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
-					Servidor.log.append(socket.getInetAddress().getHostAddress() + " ha elegido el mapa " + paquetePersonaje.getMapa() + System.lineSeparator());
-					break;
 									
 				case Comando.REGISTRO:
 					
@@ -136,29 +138,6 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 					// Le envio el id del personaje
 					salida.writeObject(gson.toJson(paquetePersonaje, paquetePersonaje.getClass()));
 					
-					break;
-
-				case Comando.INICIOSESION:
-					paqueteSv.setComando(Comando.INICIOSESION);
-					
-					// Recibo el paquete usuario
-					paqueteUsuario = (PaqueteUsuario) (gson.fromJson(cadenaLeida, PaqueteUsuario.class));
-					
-					// Si se puede loguear el usuario le envio un mensaje de exito y el paquete personaje con los datos
-					if (Servidor.getConector().loguearUsuario(paqueteUsuario)) {
-						
-						paquetePersonaje = new PaquetePersonaje();
-						paquetePersonaje = Servidor.getConector().getPersonaje(paqueteUsuario);
-						paquetePersonaje.setComando(Comando.INICIOSESION);
-						paquetePersonaje.setMensaje(Paquete.msjExito);
-						idPersonaje = paquetePersonaje.getId();
-						
-						salida.writeObject(gson.toJson(paquetePersonaje));
-						
-					} else {
-						paqueteSv.setMensaje(Paquete.msjFracaso);
-						salida.writeObject(gson.toJson(paqueteSv));
-					}
 					break;
 
 				case Comando.SALIR:
@@ -273,7 +252,6 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 				default:
 					break;
 				}
-				*/
 				
 				cadenaLeida = (String) entrada.readObject();
 			}
@@ -310,6 +288,9 @@ Por lo tanto, se desean eliminar todos los switch/case que están relacionados c
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 

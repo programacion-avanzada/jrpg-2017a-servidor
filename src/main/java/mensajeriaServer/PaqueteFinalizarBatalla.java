@@ -16,7 +16,7 @@ public class PaqueteFinalizarBatalla extends EscuchaCliente implements mensajeri
 		super(ip, socket, entrada, salida);
 	}
 	
-	public void ejecutar(){
+	public String ejecutar(){
 		
 		paqueteFinalizarBatalla = (mensajeria.PaqueteFinalizarBatalla) gson.fromJson(cadenaLeida, mensajeria.PaqueteFinalizarBatalla.class);
 		Servidor.getPersonajesConectados().get(paqueteFinalizarBatalla.getId()).setEstado(Estado.estadoJuego);
@@ -35,6 +35,8 @@ public class PaqueteFinalizarBatalla extends EscuchaCliente implements mensajeri
 		synchronized(Servidor.atencionConexiones){
 			Servidor.atencionConexiones.notify();
 		}
+		
+		return null;
 	}
 
 

@@ -17,7 +17,7 @@ public class PaqueteActualizarPersonaje extends EscuchaCliente implements Paquet
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
 		Servidor.getConector().actualizarPersonaje(paquetePersonaje);
 		
@@ -32,6 +32,7 @@ public class PaqueteActualizarPersonaje extends EscuchaCliente implements Paquet
 				e.printStackTrace();
 			}
 		}
+		return null;
 	}
 
 }

@@ -17,7 +17,7 @@ public class PaqueteConexion extends EscuchaCliente implements Paquete {
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		paquetePersonaje = (PaquetePersonaje) (gson.fromJson(cadenaLeida, PaquetePersonaje.class)).clone();
 
 		Servidor.getPersonajesConectados().put(paquetePersonaje.getId(), (PaquetePersonaje) paquetePersonaje.clone());
@@ -25,7 +25,9 @@ public class PaqueteConexion extends EscuchaCliente implements Paquete {
 		
 		synchronized(Servidor.atencionConexiones){
 			Servidor.atencionConexiones.notify();
-		}		
+		}	
+		
+		return null;
 	}
 
 }

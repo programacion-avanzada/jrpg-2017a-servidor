@@ -15,7 +15,7 @@ public class PaqueteSalir extends EscuchaCliente implements Paquete{
 	}
 
 	@Override
-	public void ejecutar() {
+	public String ejecutar() {
 		// Cierro todo
 		try {
 			entrada.close();
@@ -31,7 +31,7 @@ public class PaqueteSalir extends EscuchaCliente implements Paquete{
 		
 		// Indico que se desconecto
 		Servidor.log.append(paquete.getIp() + " se ha desconectado." + System.lineSeparator());
-		
+		return null;
 	}
 
 }

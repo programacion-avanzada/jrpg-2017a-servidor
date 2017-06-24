@@ -1,29 +1,19 @@
 package mensajeriaServer;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-
 import mensajeria.PaquetePersonaje;
 import servidor.EscuchaCliente;
 import servidor.Servidor;
 
-public class PaqueteMostrarMapas extends EscuchaCliente implements Paquete {
+public class PaqueteMostrarMapas extends mensajeriaServer.Paquete {
 
-	public PaqueteMostrarMapas(String ip, Socket socket, ObjectInputStream entrada, ObjectOutputStream salida) {
-		super(ip, socket, entrada, salida);
-		// TODO Auto-generated constructor stub
-	}
-	
-	public PaqueteMostrarMapas(){		
-		super("127.0.0.1",null,null,null);
+	public PaqueteMostrarMapas(EscuchaCliente escuchador) {
+		super(escuchador);
 	}
 
 	@Override
 	public void ejecutar() {
-		// Indico en el log que el usuario se conecto a ese mapa
-		paquetePersonaje = (PaquetePersonaje) gson.fromJson(cadenaLeida, PaquetePersonaje.class);
-		Servidor.log.append(socket.getInetAddress().getHostAddress() + " ha elegido el mapa " + paquetePersonaje.getMapa() + System.lineSeparator());
+		escuchador.paquetePersonaje = (PaquetePersonaje) escuchador.gson.fromJson(escuchador.cadenaLeida, PaquetePersonaje.class);
+		Servidor.log.append(escuchador.socket.getInetAddress().getHostAddress() + " ha elegido el mapa " + escuchador.paquetePersonaje.getMapa() + System.lineSeparator());
 	}
 
 }
