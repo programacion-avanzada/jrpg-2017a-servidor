@@ -20,7 +20,7 @@ public class PaqueteActualizarPersonaje extends mensajeriaServer.Paquete {
 		escuchador.paquetePersonaje = (PaquetePersonaje) escuchador.gson.fromJson(escuchador.cadenaLeida, PaquetePersonaje.class);
 		Servidor.getConector().actualizarPersonaje(escuchador.paquetePersonaje);
 		
-		Servidor.getPersonajesConectados().remove(escuchador.paquetePersonaje.getId());
+		//Servidor.getPersonajesConectados().remove(escuchador.paquetePersonaje.getId());
 		Servidor.getPersonajesConectados().put(escuchador.paquetePersonaje.getId(), escuchador.paquetePersonaje);
 
 		for(EscuchaCliente conectado : Servidor.getClientesConectados()) {
