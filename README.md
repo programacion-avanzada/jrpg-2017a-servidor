@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/TheBitles/jrpg-2017a-servidor.svg?branch=master)](https://travis-ci.org/TheBitles/jrpg-2017a-servidor)
+
 # World Of Middle Earth (WOME) - servidor
 
 ## Sobre las personas
@@ -12,12 +14,10 @@
 
 ### Integrantes del equipo
 
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
-* Completar ([xxxx](https://github.com/xxxx))
+* Dimas Aguirre ([a-dimas](https://github.com/a-dimas))
+* Fabián Norberto Escobar ([FabianNorbertoEscobar](https://github.com/FabianNorbertoEscobar))
+* Maxi Perez Coto ([maxiperezc](https://github.com/maxiperezc))
+* Pablo Lopez ([pabloL0pez](https://github.com/pabloL0pez))
 
 ## Sobre la tecnología
 
